@@ -3,6 +3,7 @@ import Form from "./Form";
 import PaperContainer from "./Paper";
 
 function App() {
+    const [type, setType] = useState<"text" | "video">("text");
     const [title, setTitle] = useState("Title goes here");
     const [body, setBody] = useState(
         "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. </p><p>Duis accumsan at diam nec semper. Nullam feugiat eros ante, at hendrerit ligula cursus non. Nunc feugiat, antehendrerit luctus scelerisque, libero magna consectetur urna, id consequat purus risunec sapien. Cras euismod elit in nisl dignissim elementum. </p>"
@@ -13,21 +14,13 @@ function App() {
 
     return (
         <>
-            {/*   <div>
-                <a href="https://vite.dev" target="_blank"></a>
-                <a href="https://react.dev" target="_blank"></a>
-            </div>
-            <h1>Vite + React</h1>
-            <div className="card">
-                <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-                <p className="bg-amber-50">
-                    Edit <code>src/App.tsx</code> and save to test HMR
-                </p>
-            </div>
-            <p className="read-the-docs">Click on the Vite and React logos to learn more</p> */}
             <div className="flex w-full h-full overflow-hidden justify-center items-center bg-gray-600">
                 {showForm && (
                     <Form
+                        typeValue={type}
+                        typeOnChange={(value: "text" | "video") => {
+                            setType(value);
+                        }}
                         titleValue={title}
                         titleOnChange={(value: string) => {
                             setTitle(value);
@@ -48,11 +41,13 @@ function App() {
                 )}
                 {showPaper && (
                     <PaperContainer
+                        type={type}
                         titleValue={title}
                         bodyValue={body}
                         imageValue={image}
                         closePaper={() => {
                             setShowPaper(false);
+                            setShowForm(true);
                         }}
                     />
                 )}
