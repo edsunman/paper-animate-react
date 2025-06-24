@@ -21,6 +21,9 @@ function Form(props: Props) {
                         } p-1 cursor-pointer `}
                         onClick={() => {
                             props.imageOnChange("https://picsum.photos/600");
+                            props.bodyOnChange(
+                                "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. </p><p>Duis accumsan at diam nec semper. Nullam feugiat eros ante, at hendrerit ligula cursus non. Nunc feugiat, antehendrerit luctus scelerisque, libero magna consectetur urna, id consequat purus risunec sapien. Cras euismod elit in nisl dignissim elementum. </p>"
+                            );
                             props.typeOnChange("text");
                         }}
                     >
