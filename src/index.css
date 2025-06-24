@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+@theme {
+    --font-sans: "Inter", sans-serif;
+    --font-serif: "Crimson Text", serif;
+    --color-mint-500: rgba(45, 106, 101, 0.85);
+    --color-mint-400: rgb(115, 166, 152);
+}
