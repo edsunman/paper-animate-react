@@ -9,9 +9,11 @@ type Props = {
 
 function PaperContainer(props: Props) {
     const [move, setMove] = useState(false);
+    const [glow, setGlow] = useState(false);
     const movePaper = () => {
-        setMove(true);
-        // setTimeout(() => props.closePaper(), 2000);
+        setGlow(true);
+        setTimeout(() => setMove(true), 800);
+        setTimeout(() => props.closePaper(), 3000);
     };
     return (
         <>
@@ -20,9 +22,14 @@ function PaperContainer(props: Props) {
                 className={`${move ? "translate-x-[150svw]" : "translate-x-0"}
                 starting:-translate-x-[120svw] transition-transform duration-2000
                 bg-size-[100%] [@media(min-aspect-ratio:16/9)]:w-[75%] [@media(min-aspect-ratio:20/9)]:w-[50%] [@media(min-aspect-ratio:30/9)]:w-[30%]
-                w-[90%] p-[7%_8%] grid aspect-16/9 grid-rows-[20%_80%] grid-cols-2`}
+                w-[90%] p-[7%_8%] grid aspect-16/9 grid-rows-[20%_80%] grid-cols-2 relative`}
             >
-                <div>
+                <div
+                    style={{ backgroundImage: "url(/paper_glow.png)" }}
+                    className={`absolute top-0 left-0 w-full h-full bg-size-[100%]
+                    ${glow ? "opacity-100" : "opacity-5"} transition-opacity duration-1000`}
+                ></div>
+                <div className="z-10">
                     <h1
                         className="font-serif text-4xl font-semibold text-mint-500 mb-2
                      starting:opacity-0 opacity-100 transition-opacity duration-4000 easing=[cubic-bezier(1,-0.01,.9,.66)]"
@@ -39,7 +46,12 @@ function PaperContainer(props: Props) {
                     ></div>
                 </div>
                 <div
-                    className="row-start-2 col-start-1 text-mint-400
+                    id="paperParagraphContainer"
+                    style={{
+                        scrollbarColor: "rgb(115, 166, 152) rgba(0, 0, 0, 0)",
+                        scrollbarWidth: "thin",
+                    }}
+                    className="z-10 row-start-2 col-start-1 text-mint-400 overflow-y-auto
                     starting:opacity-0 opacity-100 transition-opacity duration-2000 delay-2200"
                     dangerouslySetInnerHTML={{ __html: props.bodyValue }}
                 ></div>
@@ -54,7 +66,7 @@ function PaperContainer(props: Props) {
                 ></div>
 
                 <button
-                    className="justify-self-end align-top self-start"
+                    className="z-10 justify-self-end align-top self-start cursor-pointer"
                     onClick={() => movePaper()}
                 >
                     <svg

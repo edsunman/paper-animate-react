@@ -6,3 +6,7 @@
     --color-mint-500: rgba(45, 106, 101, 0.85);
     --color-mint-400: rgb(115, 166, 152);
 }
+
+#paperParagraphContainer p {
+    margin: 10px 0;
+}
