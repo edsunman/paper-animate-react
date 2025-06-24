@@ -1,7 +1,7 @@
 import { createRef, useEffect, useState } from "react";
 
 type Props = {
-    type: "text" | "video";
+    type: "text" | "video" | "audio";
     titleValue: string;
     bodyValue: string;
     imageValue: string;
@@ -38,8 +38,9 @@ function PaperContainer(props: Props) {
                 ></div>
                 {props.type === "text" && <Text {...props} />}
                 {props.type === "video" && <Video {...props} />}
+                {props.type === "audio" && <Audio {...props} />}
                 <button
-                    className="z-10 col-start-2 justify-self-end align-top self-start cursor-pointer"
+                    className={`z-10 absolute top-[10%] right-[10%] cursor-pointer`}
                     onClick={() => movePaper()}
                 >
                     <svg
@@ -59,6 +60,59 @@ function PaperContainer(props: Props) {
 
 export default PaperContainer;
 
+function Audio(props: Props) {
+    const audio = createRef<HTMLAudioElement>();
+    const [titleVisible, setTitleVisible] = useState(true);
+    const [videoVisible, setVideoVisible] = useState(false);
+    const [subtitle, setSubtitle] = useState(true);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setTitleVisible(false);
+            setTimeout(() => {
+                setVideoVisible(true);
+            }, 3000);
+        }, 4000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(() => {
+        if (audio && videoVisible) {
+            audio.current?.play();
+            audio.current?.textTracks[0].addEventListener("cuechange", (e: any) => {
+                if (e.currentTarget.activeCues[0]) {
+                    setSubtitle(e.currentTarget?.activeCues[0].text);
+                }
+            });
+        }
+    }, [audio, videoVisible]);
+
+    return (
+        <>
+            {!videoVisible && (
+                <h1
+                    className={` ${titleVisible ? "opacity-100" : "opacity-0"}
+                starting:opacity-0  transition-opacity duration-2000 delay-1500
+                font-serif text-5xl font-semibold text-mint-500 text-center content-center`}
+                >
+                    {props.titleValue}
+                </h1>
+            )}
+            <h3 className="font-serif text-4xl px-[20%] font-semibold text-mint-500 mb-2 text-center content-center">
+                {subtitle}
+            </h3>
+            <audio ref={audio}>
+                <source src={props.imageValue} type="audio/mp3" />
+                <track
+                    src={`data:text/vtt;base64,${btoa(props.bodyValue)}`}
+                    label="English"
+                    kind="captions"
+                    default
+                />
+            </audio>
+        </>
+    );
+}
+
 function Video(props: Props) {
     const video = createRef<HTMLVideoElement>();
     const [titleVisible, setTitleVisible] = useState(true);
@@ -66,10 +120,8 @@ function Video(props: Props) {
     useEffect(() => {
         const timer = setTimeout(() => {
             setTitleVisible(false);
-            console.log("setting title");
             setTimeout(() => {
                 setVideoVisible(true);
-                console.log("setting video");
             }, 3000);
         }, 4000);
         return () => clearTimeout(timer);
