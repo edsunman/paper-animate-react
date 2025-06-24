@@ -10,3 +10,11 @@
 #paperParagraphContainer p {
     margin: 10px 0;
 }
+
+/* not using tailwing to fix safari bug */
+#paperContainer {
+    @starting-style {
+        /*--tw-translate-x: calc(120svw * -1)  -120svw */
+        translate: -120svw 0;
+    }
+}

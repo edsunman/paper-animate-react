@@ -20,13 +20,14 @@ function PaperContainer(props: Props) {
         <>
             <div
                 style={{ backgroundImage: "url(/paper.png)" }}
+                id="paperContainer"
                 className={`${move ? "translate-x-[150svw]" : "translate-x-0"}
                 ${
                     props.type === "text"
                         ? "grid-rows-[20%_80%] grid-cols-2"
                         : "grid-rows-1 grid-cols-1"
                 }
-                starting:-translate-x-[120svw] transition-transform duration-2000
+             transition-transform duration-2000
                 bg-size-[100%] [@media(min-aspect-ratio:16/9)]:w-[75%] [@media(min-aspect-ratio:20/9)]:w-[50%] [@media(min-aspect-ratio:30/9)]:w-[30%]
                 w-[90%] p-[7%_8%] grid aspect-16/9 relative`}
             >
