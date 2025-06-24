@@ -13,31 +13,41 @@ type Props = {
 function Form(props: Props) {
     return (
         <>
-            <div className="absolute top-0 left-0 right-0 flex flex-col mx-auto w-sm bg-white rounded p-5 mt-20 ">
-                <button
-                    onClick={() => {
-                        props.imageOnChange("https://picsum.photos/600");
-                        props.typeOnChange("text");
-                    }}
-                >
-                    Text
-                </button>
-                <button
-                    onClick={() => {
-                        props.imageOnChange(
-                            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-                        );
-                        props.typeOnChange("video");
-                    }}
-                >
-                    Video
-                </button>
-                <button
-                    onClick={() => {
-                        props.imageOnChange(
-                            "https://lesaffranchis.s3.amazonaws.com/memorial-vivant/audios/1649178142-1023790_1023794_DM_FMix-WEBDyn_23976_en-008m51s_DualMono_02-076_censur.L.mp3"
-                        );
-                        props.bodyOnChange(`WEBVTT
+            <div className="absolute top-0 left-0 right-0 flex flex-col mx-auto w-sm bg-white rounded p-5 mt-10 ">
+                <div className="flex justify-between">
+                    <button
+                        className={`${
+                            props.typeValue === "text" ? "font-semibold" : ""
+                        } p-1 cursor-pointer `}
+                        onClick={() => {
+                            props.imageOnChange("https://picsum.photos/600");
+                            props.typeOnChange("text");
+                        }}
+                    >
+                        Text
+                    </button>
+                    <button
+                        className={`${
+                            props.typeValue === "video" ? "font-semibold" : ""
+                        } p-1 cursor-pointer `}
+                        onClick={() => {
+                            props.imageOnChange(
+                                "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                            );
+                            props.typeOnChange("video");
+                        }}
+                    >
+                        Video
+                    </button>
+                    <button
+                        className={`${
+                            props.typeValue === "audio" ? "font-semibold" : ""
+                        } p-1 cursor-pointer `}
+                        onClick={() => {
+                            props.imageOnChange(
+                                "https://lesaffranchis.s3.amazonaws.com/memorial-vivant/audios/1649178142-1023790_1023794_DM_FMix-WEBDyn_23976_en-008m51s_DualMono_02-076_censur.L.mp3"
+                            );
+                            props.bodyOnChange(`WEBVTT
 
 1
 00:00:00.200 --> 00:00:02.402
@@ -64,11 +74,12 @@ and I got off.
 People were pointing me over
 towards the canal.
 `);
-                        props.typeOnChange("audio");
-                    }}
-                >
-                    Audio
-                </button>
+                            props.typeOnChange("audio");
+                        }}
+                    >
+                        Audio
+                    </button>
+                </div>
                 {props.typeValue === "text" && (
                     <>
                         <label htmlFor="paperTitle" className="mt-8 mb-2">
