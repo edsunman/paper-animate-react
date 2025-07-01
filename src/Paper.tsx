@@ -95,7 +95,7 @@ function Audio(props: Props) {
                 width={300}
                 className="z-10 col-start-1 row-start-1 justify-self-center self-center opacity-50 starting:opacity-0 transition-opacity duration-1000"
             ></canvas>
-            <audio ref={audio} crossOrigin="anonymous">
+            <audio ref={audio}>
                 <source src={props.imageValue} type="audio/mp3" />
                 <track
                     src={`data:text/vtt;base64,${btoa(props.bodyValue)}`}
@@ -200,17 +200,22 @@ function SubtitleContainer(props: {
     const [subtitle, setSubtitle] = useState("");
     const lines = convertStringToSeperateLines(subtitle);
     const requestIdRef = useRef(0);
-    let analyser: AnalyserNode;
-    let dataArray: Uint8Array;
+    // let analyser: AnalyserNode;
+    // let dataArray: Uint8Array;
     let bigCircle = 150;
     let midCircle = 100;
     let smallCircle = 85;
+    let i = 0;
     const loop = () => {
-        analyser.getByteTimeDomainData(dataArray);
+        //  analyser.getByteTimeDomainData(dataArray);
 
-        bigCircle = bigCircle < dataArray[500] ? dataArray[500] : bigCircle - 1;
-        midCircle = midCircle < dataArray[1000] ? dataArray[1000] : midCircle - 1;
-        smallCircle = smallCircle < dataArray[800] ? dataArray[800] : smallCircle - 1;
+        const randomBig = i % 2 === 0 ? Math.random() * 200 : 0;
+        const randomMid = i % 3 === 0 ? Math.random() * 200 : 0;
+        const randomSmall = i % 4 === 0 ? Math.random() * 200 : 0;
+
+        bigCircle = bigCircle < randomBig ? randomBig : bigCircle - 0.5;
+        midCircle = midCircle < randomMid ? randomMid : midCircle - 1;
+        smallCircle = smallCircle < randomSmall ? randomSmall : smallCircle - 1;
 
         bigCircle = bigCircle < 1 ? 1 : bigCircle;
         midCircle = midCircle < 1 ? 1 : midCircle;
@@ -227,13 +232,14 @@ function SubtitleContainer(props: {
             ctx.fill();
             ctx.fillStyle = "rgba(115, 166,152,0.3)";
             ctx.beginPath();
-            ctx.arc(150, 150, midCircle * 0.6, 0, 2 * Math.PI);
+            ctx.arc(150, 150, midCircle * 0.65, 0, 2 * Math.PI);
             ctx.fill();
             ctx.fillStyle = "rgba(0, 166,118,0.15)";
             ctx.beginPath();
             ctx.arc(150, 150, smallCircle * 0.4, 0, 2 * Math.PI);
             ctx.fill();
         }
+        i++;
         requestIdRef.current = requestAnimationFrame(loop);
     };
 
@@ -246,43 +252,13 @@ function SubtitleContainer(props: {
                     setSubtitle((event.activeCues[0] as VTTCue).text);
                 }
             });
-
-            const audioContext = new AudioContext();
-            const track = audioContext.createMediaElementSource(props.audio.current!);
-            analyser = audioContext.createAnalyser();
-            analyser.fftSize = 2048;
-            const bufferLength = analyser.frequencyBinCount;
-            dataArray = new Uint8Array(bufferLength);
-            track.connect(analyser);
-            analyser.connect(audioContext.destination);
         }
     }, []);
     useEffect(function () {
         requestIdRef.current = requestAnimationFrame(loop);
         return () => cancelAnimationFrame(requestIdRef.current);
     }, []);
-    /*     useEffect(() => {
-        if (props.canvas) {
-            const ctx = props.canvas.current?.getContext("2d");
-            console.log(ctx);
-            if (!ctx) return;
 
-            // do something here with the canvas
-            ctx.clearRect(0, 0, 400, 400);
-            ctx.fillStyle = "rgba(255, 255,235,0.9)";
-            ctx.beginPath();
-            ctx.arc(150, 150, 150, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.fillStyle = "rgba(115, 166,152,0.5)";
-            ctx.beginPath();
-            ctx.arc(150, 150, 120, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.fillStyle = "rgba(0, 166,118,0.15)";
-            ctx.beginPath();
-            ctx.arc(150, 150, 80, 0, 2 * Math.PI);
-            ctx.fill();
-        }
-    }, [props.canvas]); */
     return (
         <>
             <div className="text-center content-center col-start-1 row-start-1 sm:leading-15  lg:leading-18 font-subtitle">
