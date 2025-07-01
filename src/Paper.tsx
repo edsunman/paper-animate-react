@@ -1,5 +1,4 @@
-import { createRef, useEffect, useState } from "react";
-import { AnimatedSvg } from "./AnimatedSvg";
+import { createRef, useEffect, useRef, useState, type RefObject } from "react";
 import { convertStringToSeperateLines } from "./utils";
 
 type Props = {
@@ -64,10 +63,9 @@ export default PaperContainer;
 
 function Audio(props: Props) {
     const audio = createRef<HTMLAudioElement>();
+    const canvas = createRef<HTMLCanvasElement>();
     const [titleVisible, setTitleVisible] = useState(true);
     const [videoVisible, setVideoVisible] = useState(false);
-    const [subtitle, setSubtitle] = useState("");
-    const lines = convertStringToSeperateLines(subtitle);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -79,41 +77,25 @@ function Audio(props: Props) {
         return () => clearTimeout(timer);
     }, []);
 
-    useEffect(() => {
-        if (audio && videoVisible) {
-            audio.current?.play();
-            audio.current?.textTracks[0].addEventListener("cuechange", (e) => {
-                const event = e.currentTarget as TextTrack;
-                if (event.activeCues && event.activeCues[0]) {
-                    setSubtitle((event.activeCues[0] as VTTCue).text);
-                }
-            });
-        }
-    }, [audio, videoVisible]);
-
     return (
         <>
+            {videoVisible && <SubtitleContainer audio={audio} canvas={canvas} />}
             {!videoVisible && (
                 <h1
                     className={` ${titleVisible ? "opacity-100" : "opacity-0"}
-                starting:opacity-0  transition-opacity duration-2000 delay-1500
+                col-start-1 row-start-1 starting:opacity-0  transition-opacity duration-2000 delay-1500
                 font-serif text-5xl font-semibold text-mint-500 text-center content-center`}
                 >
                     {props.titleValue}
                 </h1>
             )}
-            {videoVisible && (
-                <>
-                    <AnimatedSvg />
-                    <div className="text-center content-center col-start-1 row-start-1 sm:leading-15  lg:leading-18 font-subtitle">
-                        {lines.map((x, i) => (
-                            <Subtitle key={i} subtitle={x} />
-                        ))}
-                    </div>
-                </>
-            )}
-
-            <audio ref={audio}>
+            <canvas
+                ref={canvas}
+                height={300}
+                width={300}
+                className="z-10 col-start-1 row-start-1 justify-self-center self-center opacity-50 starting:opacity-0 transition-opacity duration-1000"
+            ></canvas>
+            <audio ref={audio} crossOrigin="anonymous">
                 <source src={props.imageValue} type="audio/mp3" />
                 <track
                     src={`data:text/vtt;base64,${btoa(props.bodyValue)}`}
@@ -207,6 +189,107 @@ function Text(props: Props) {
                     maskImage: `url(/mask.png)`,
                 }}
             ></div>
+        </>
+    );
+}
+
+function SubtitleContainer(props: {
+    audio: RefObject<HTMLAudioElement | null>;
+    canvas: RefObject<HTMLCanvasElement | null>;
+}) {
+    const [subtitle, setSubtitle] = useState("");
+    const lines = convertStringToSeperateLines(subtitle);
+    const requestIdRef = useRef(0);
+    let analyser: AnalyserNode;
+    let dataArray: Uint8Array;
+    let bigCircle = 150;
+    let midCircle = 100;
+    let smallCircle = 85;
+    const loop = () => {
+        analyser.getByteTimeDomainData(dataArray);
+
+        bigCircle = bigCircle < dataArray[500] ? dataArray[500] : bigCircle - 1;
+        midCircle = midCircle < dataArray[1000] ? dataArray[1000] : midCircle - 1;
+        smallCircle = smallCircle < dataArray[800] ? dataArray[800] : smallCircle - 1;
+
+        bigCircle = bigCircle < 1 ? 1 : bigCircle;
+        midCircle = midCircle < 1 ? 1 : midCircle;
+        smallCircle = smallCircle < 1 ? 1 : smallCircle;
+
+        if (props.canvas) {
+            const ctx = props.canvas.current?.getContext("2d");
+            if (!ctx) return;
+
+            ctx.clearRect(0, 0, 400, 400);
+            ctx.fillStyle = "rgba(255, 255,235,0.5)";
+            ctx.beginPath();
+            ctx.arc(150, 150, bigCircle * 0.7, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = "rgba(115, 166,152,0.3)";
+            ctx.beginPath();
+            ctx.arc(150, 150, midCircle * 0.6, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = "rgba(0, 166,118,0.15)";
+            ctx.beginPath();
+            ctx.arc(150, 150, smallCircle * 0.4, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+        requestIdRef.current = requestAnimationFrame(loop);
+    };
+
+    useEffect(() => {
+        if (props.audio) {
+            props.audio.current?.play();
+            props.audio.current?.textTracks[0].addEventListener("cuechange", (e) => {
+                const event = e.currentTarget as TextTrack;
+                if (event.activeCues && event.activeCues[0]) {
+                    setSubtitle((event.activeCues[0] as VTTCue).text);
+                }
+            });
+
+            const audioContext = new AudioContext();
+            const track = audioContext.createMediaElementSource(props.audio.current!);
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 2048;
+            const bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+            track.connect(analyser);
+            analyser.connect(audioContext.destination);
+        }
+    }, []);
+    useEffect(function () {
+        requestIdRef.current = requestAnimationFrame(loop);
+        return () => cancelAnimationFrame(requestIdRef.current);
+    }, []);
+    /*     useEffect(() => {
+        if (props.canvas) {
+            const ctx = props.canvas.current?.getContext("2d");
+            console.log(ctx);
+            if (!ctx) return;
+
+            // do something here with the canvas
+            ctx.clearRect(0, 0, 400, 400);
+            ctx.fillStyle = "rgba(255, 255,235,0.9)";
+            ctx.beginPath();
+            ctx.arc(150, 150, 150, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = "rgba(115, 166,152,0.5)";
+            ctx.beginPath();
+            ctx.arc(150, 150, 120, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = "rgba(0, 166,118,0.15)";
+            ctx.beginPath();
+            ctx.arc(150, 150, 80, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+    }, [props.canvas]); */
+    return (
+        <>
+            <div className="text-center content-center col-start-1 row-start-1 sm:leading-15  lg:leading-18 font-subtitle">
+                {lines.map((x, i) => (
+                    <Subtitle key={i} subtitle={x} />
+                ))}
+            </div>
         </>
     );
 }
