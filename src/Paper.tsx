@@ -200,15 +200,23 @@ function SubtitleContainer(props: {
     const [subtitle, setSubtitle] = useState("");
     const lines = convertStringToSeperateLines(subtitle);
     const requestIdRef = useRef(0);
-    // let analyser: AnalyserNode;
-    // let dataArray: Uint8Array;
     let bigCircle = 150;
     let midCircle = 100;
     let smallCircle = 85;
+    let lerpedBigCircle = 0;
+    let lerpedMidCircle = 0;
+    let lerpedSmallCircle = 0;
     let i = 0;
-    const loop = () => {
-        //  analyser.getByteTimeDomainData(dataArray);
+    const lerp = (currentValue: number, targetValue: number, lerpAmount = 0.1) => {
+        currentValue = currentValue + (targetValue - currentValue) * lerpAmount;
 
+        // Add a small threshold for stopping to prevent tiny oscillations due to floating point precision
+        if (Math.abs(targetValue - currentValue) < 0.01) {
+            currentValue = targetValue; // Snap to target when very close
+        }
+        return currentValue;
+    };
+    const loop = () => {
         const randomBig = i % 2 === 0 ? Math.random() * 200 : 0;
         const randomMid = i % 3 === 0 ? Math.random() * 200 : 0;
         const randomSmall = i % 4 === 0 ? Math.random() * 200 : 0;
@@ -221,22 +229,26 @@ function SubtitleContainer(props: {
         midCircle = midCircle < 1 ? 1 : midCircle;
         smallCircle = smallCircle < 1 ? 1 : smallCircle;
 
+        lerpedBigCircle = lerp(lerpedBigCircle, bigCircle, 0.08);
+        lerpedMidCircle = lerp(lerpedMidCircle, midCircle, 0.15);
+        lerpedSmallCircle = lerp(lerpedSmallCircle, smallCircle, 0.3);
+
         if (props.canvas) {
             const ctx = props.canvas.current?.getContext("2d");
             if (!ctx) return;
 
             ctx.clearRect(0, 0, 400, 400);
-            ctx.fillStyle = "rgba(255, 255,235,0.5)";
+            ctx.fillStyle = "rgba(255, 255,235,0.3)";
             ctx.beginPath();
-            ctx.arc(150, 150, bigCircle * 0.7, 0, 2 * Math.PI);
+            ctx.arc(150, 150, lerpedBigCircle * 0.7, 0, 2 * Math.PI);
             ctx.fill();
-            ctx.fillStyle = "rgba(115, 166,152,0.3)";
+            ctx.fillStyle = "rgba(115, 166,152,0.2)";
             ctx.beginPath();
-            ctx.arc(150, 150, midCircle * 0.65, 0, 2 * Math.PI);
+            ctx.arc(150, 150, lerpedMidCircle * 0.63, 0, 2 * Math.PI);
             ctx.fill();
             ctx.fillStyle = "rgba(0, 166,118,0.15)";
             ctx.beginPath();
-            ctx.arc(150, 150, smallCircle * 0.4, 0, 2 * Math.PI);
+            ctx.arc(150, 150, lerpedSmallCircle * 0.4, 0, 2 * Math.PI);
             ctx.fill();
         }
         i++;
