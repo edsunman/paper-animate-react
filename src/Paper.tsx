@@ -81,13 +81,27 @@ function Audio(props: Props) {
         <>
             {videoVisible && <SubtitleContainer audio={audio} canvas={canvas} />}
             {!videoVisible && (
-                <h1
-                    className={` ${titleVisible ? "opacity-100" : "opacity-0"}
-                col-start-1 row-start-1 starting:opacity-0  transition-opacity duration-2000 delay-1500
-                font-serif text-5xl font-semibold text-mint-500 text-center content-center`}
+                <div
+                    className={`${
+                        titleVisible ? "opacity-100" : "opacity-0"
+                    } transition-opacity duration-2000 delay-1500 row-start-1 col-start-1 self-center justify-self-start pl-[6%]`}
                 >
-                    {props.titleValue}
-                </h1>
+                    <h1
+                        className={` 
+                mb-5 col-start-1 row-start-1 starting:opacity-0  transition-opacity duration-2000 delay-1500
+                font-serif text-5xl font-semibold text-mint-500 text-left content-center`}
+                    >
+                        {props.titleValue}
+                    </h1>
+                    <div
+                        style={{
+                            backgroundImage: `url(/line-brown.png)`,
+                            maskImage: "linear-gradient(#fff, #fff)",
+                        }}
+                        className="w-80 aspect-10/1 bg-no-repeat bg-contain mask-luminance mask-no-repeat starting:opacity-0 opacity-100 
+                        starting:mask-size-[0%_100%] mask-size-[100%_100%] transition-all delay-1500 duration-2000"
+                    ></div>
+                </div>
             )}
             <canvas
                 ref={canvas}
@@ -129,13 +143,27 @@ function Video(props: Props) {
     return (
         <>
             {!videoVisible && (
-                <h1
-                    className={` ${titleVisible ? "opacity-100" : "opacity-0"}
-                starting:opacity-0  transition-opacity duration-2000 delay-1500
-                font-serif text-5xl font-semibold text-mint-500 mb-2 text-center content-center`}
+                <div
+                    className={`${
+                        titleVisible ? "opacity-100" : "opacity-0"
+                    } transition-opacity duration-2000 delay-1500 row-start-1 col-start-1 self-center justify-self-start pl-[6%]`}
                 >
-                    {props.titleValue}
-                </h1>
+                    <h1
+                        className={` 
+                mb-5 col-start-1 row-start-1 starting:opacity-0  transition-opacity duration-2000 delay-1500
+                font-serif text-5xl font-semibold text-mint-500 text-left content-center`}
+                    >
+                        {props.titleValue}
+                    </h1>
+                    <div
+                        style={{
+                            backgroundImage: `url(/line-brown.png)`,
+                            maskImage: "linear-gradient(#fff, #fff)",
+                        }}
+                        className="w-80 aspect-10/1 bg-no-repeat bg-contain mask-luminance mask-no-repeat starting:opacity-0 opacity-100 
+                        starting:mask-size-[0%_100%] mask-size-[100%_100%] transition-all delay-1500 duration-2000"
+                    ></div>
+                </div>
             )}
 
             <video
@@ -163,10 +191,10 @@ function Text(props: Props) {
                 </h1>
                 <div
                     style={{
-                        backgroundImage: `url(/line.png)`,
+                        backgroundImage: `url(/line-brown.png)`,
                         maskImage: "linear-gradient(#fff, #fff)",
                     }}
-                    className="w-70 aspect-10/1 bg-no-repeat bg-contain mask-luminance mask-no-repeat starting:opacity-0 opacity-65 
+                    className="w-70 aspect-10/1 bg-no-repeat bg-contain mask-luminance mask-no-repeat starting:opacity-0 opacity-100 
                         starting:mask-size-[0%_100%] mask-size-[100%_100%] transition-all delay-1500 duration-2000"
                 ></div>
             </div>
